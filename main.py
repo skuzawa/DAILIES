@@ -9,7 +9,16 @@ from fastapi_csrf_protect.exceptions import CsrfProtectError
 app = FastAPI()
 app.include_router(route_daily.router)
 app.include_router(route_auth.router)
-origins = ['http://localhost:3000','https://localhost:3000','http://192.168.0.3:3000']
+origins = ['http://localhost:3000','http://localhost:3000','https://dailies-oigr.onrender.com']
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 
 app.add_middleware(
    CORSMiddleware,
