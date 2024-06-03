@@ -18,8 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-
 app.add_middleware(
    CORSMiddleware,
    allow_origins = origins,
@@ -30,11 +28,16 @@ app.add_middleware(
 
 @CsrfProtect.load_config
 def get_csrf_config():
-  return CsrfSettings()
+    return CsrfSettings()
+
 
 @app.exception_handler(CsrfProtectError)
 def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
-  return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={'detail':  exc.message
+                 }
+    )
 
 @app.get("/",response_model=SuccessMsg)
 def root():

@@ -69,25 +69,25 @@ async def db_delete_daily(id:str) -> bool:
             return True
     return False
 
-async def db_signup(data:dict) -> dict:
+async def db_signup(data: dict) -> dict:
     email = data.get("email")
     password = data.get("password")
-    overlap_user = await collection_user.find_one({"email":email})
+    overlap_user = await collection_user.find_one({"email": email})
     if overlap_user:
-        raise HTTPException(status_code=400, detail = "This email is already exist")
+        raise HTTPException(status_code=400, detail='Email is already taken')
     if not password or len(password) < 6:
-        raise HTTPException(status_code=400, detail = "password is too short")
-    user = await collection_user.insert_one({"email":email,"password":auth.generate_hashed_pw(password)})
-    new_user = await collection_user.find_one({"_id":user.inserted_id})
+        raise HTTPException(status_code=400, detail='Password too short')
+    user = await collection_user.insert_one({"email": email, "password": auth.generate_hashed_pw(password)})
+    new_user = await collection_user.find_one({"_id": user.inserted_id})
     return user_serializer(new_user)
+
 
 async def db_login(data: dict) -> str:
     email = data.get("email")
     password = data.get("password")
-    user = await collection_user.find_one({"email":email})
-    if not user or not auth.veriify_pw(password,user["password"]):
+    user = await collection_user.find_one({"email": email})
+    if not user or not auth.verify_pw(password, user["password"]):
         raise HTTPException(
-            status_code=401, detail = "Invalid email or password"
-        )
-    token = auth.encode_jwt(user["email"])
+            status_code=401, detail='Invalid email or password')
+    token = auth.encode_jwt(user['email'])
     return token
